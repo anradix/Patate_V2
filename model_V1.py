@@ -4,13 +4,11 @@ from keras.preprocessing.image import img_to_array
 from keras.models import Model, Sequential
 from keras.layers import *
 from keras.layers import concatenate
-import keras.backend as K
 import keras.optimizers as Optimizers
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, TensorBoard
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
 import random
 
 # LOAD DATA #
@@ -59,15 +57,15 @@ x = Flatten(name='flattened')(x)
 x = Dense(100, use_bias=False)(x) 
 x = BatchNormalization()(x)
 x = Activation("relu")(x)
-x = Dropout(.4)(x)
+x = Dropout(.2)(x)
 x = Dense(100, use_bias=False)(x)  
 x = BatchNormalization()(x)
 x = Activation("relu")(x)
-x = Dropout(.4)(x)
+x = Dropout(.2)(x)
 x = Dense(100, use_bias=False)(x) 
 x = BatchNormalization()(x)
 x = Activation("relu")(x)
-x = Dropout(.4)(x)
+x = Dropout(.2)(x)
 
 out_speed = Dense(2, activation='softmax')(x)
 out_dir = Dense(5, activation='softmax')(x)
