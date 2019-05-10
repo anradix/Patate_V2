@@ -9,10 +9,10 @@ from keras.layers import (
     BatchNormalization,
 )
 
-def getOldModel():
+def getOldModel(input_size=(96, 160, 3)):
     """ Description of the function !
     """
-    img_in = Input(shape=(96, 160, 3), name='img_in')
+    img_in = Input(shape=input_size, name='img_in')
 
     # convolution part of the model
     x = Convolution2D(4, (5,5), strides=(2,2), use_bias=False)(img_in)
@@ -40,8 +40,8 @@ def getOldModel():
     x = Activation("relu")(x)
     x = Dropout(.2)(x)
 
-    out_speed = Dense(2, activation='softmax')(x)
-    out_dir = Dense(5, activation='softmax')(x)
+    out_speed = Dense(2, activation='softmax', name="fc_speed")(x)
+    out_dir = Dense(5, activation='softmax', name="fc_direction")(x)
 
     model = Model(inputs=[img_in], outputs=[out_speed, out_dir])
     return model
