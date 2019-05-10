@@ -6,7 +6,14 @@ from glob import glob
 from keras.utils import to_categorical
 
 class InputGenerator(object):
-    def  __init__(self, datapath, input_size):
+    def  __init__(self,
+                datapath,
+                input_size,
+                augmentation = {
+                    "gray_scale": .0,
+                    "flip_vertical":.5,
+                }
+            ):
         dir_list = glob(datapath + '/*.jpg')
 
         data = []
@@ -19,6 +26,31 @@ class InputGenerator(object):
         self.data = data
         self.size = len(data)
         self.input_size = input_size
+
+        self.__dict__.update(augmentation)
+
+    def augGrayScale(self, input):
+        # ton code ici
+        input = np.dot(input[...,:3], [0.299, 0.587, 0.114])
+        input = np.reshape(input, (input.shape[0], input.shape[1], 1))
+        input = np.concatenate((input, input, input), axis=2)
+
+        cv2.imshow('image',np.uint8(input))
+        cv2.waitKey(0)
+
+        return input
+
+    def augFlipVertical(self, input, output):
+        pass
+        # ton code ici
+        return input, output
+
+    def augmentation(self, input, output):
+        if random.random() > self.gray_scale:
+            input = self.augGrayScale(input)
+        if random.random() > self.flip_vertical:
+            input, output = self.augFlipVertical(input, output)
+        return input, output
 
     def generator(self, batch_size=32):
 
@@ -35,7 +67,10 @@ class InputGenerator(object):
                 input_path, output = data_copy[0]
                 # Input formating
                 input = cv2.imread(input_path)
-                """Data augmentation there"""
+
+                """ Data augmentation there
+                """
+                input, output = self.augmentation(input, output)
 
                 # Normalization
                 size = (self.input_size[1], self.input_size[0])
@@ -56,3 +91,10 @@ class InputGenerator(object):
             y['fc_speed'] = np.array(y['fc_speed'])
             y['fc_direction'] = np.array(y['fc_direction'])
             yield X, y
+
+
+if __name__ == "__main__":
+
+    gen = InputGenerator("./datas/Train", (96, 160, 3))
+    for _ in gen.generator():
+        pass
