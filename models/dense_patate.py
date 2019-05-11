@@ -73,7 +73,7 @@ def getDenseModel(input_size=(96, 160, 3), activation="relu"):
     x = Flatten(name='flattened')(x)
 
     # fully connected part of the model
-    x = Dense(50, use_bias=False, name="fdense_2")(x)
+    x = Dense(100, use_bias=False, name="fdense_2")(x)
     x = BatchNormalization(name="fnorm_2")(x)
     x = Activation(activation, name="factivation_2")(x)
     x = Dropout(.1, name="fdrop_2")(x)
