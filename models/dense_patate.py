@@ -78,8 +78,8 @@ def getDenseModel(input_size=(96, 160, 3), activation="relu"):
     x = Activation(activation, name="factivation_2")(x)
     x = Dropout(.1, name="fdrop_2")(x)
 
-    out_speed = Dense(2, activation='softmax', name="fc_speed")(x)
-    out_dir = Dense(5, activation='softmax', name="fc_direction")(x)
+    out_speed = Dense(2, activation='softmax', name="speed")(x)
+    out_dir = Dense(5, activation='softmax', name="direction")(x)
 
     model = Model(inputs=[img_in], outputs=[out_speed, out_dir])
     return model

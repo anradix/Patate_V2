@@ -40,8 +40,8 @@ def getOldModel(input_size=(96, 160, 3)):
     x = Activation("relu")(x)
     x = Dropout(.2)(x)
 
-    out_speed = Dense(2, activation='softmax', name="fc_speed")(x)
-    out_dir = Dense(5, activation='softmax', name="fc_direction")(x)
+    out_speed = Dense(2, activation='softmax', name="speed")(x)
+    out_dir = Dense(5, activation='softmax', name="direction")(x)
 
     model = Model(inputs=[img_in], outputs=[out_speed, out_dir])
     return model

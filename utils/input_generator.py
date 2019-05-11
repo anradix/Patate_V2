@@ -64,7 +64,7 @@ class InputGenerator(object):
                 data_copy = self.data.copy()
                 random.shuffle(data_copy)
             X = []
-            y = {"fc_speed": [], "fc_direction": []}
+            y = {"speed": [], "direction": []}
             for _ in range(batch_size):
                 input_path, output = data_copy[0]
                 # Input formating
