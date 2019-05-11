@@ -42,6 +42,25 @@ class InputGenerator(object):
 
         return input
 
+    def augGaussianBlur(self, input):
+        kernel = (5,5)
+        input = cv2.GaussianBlur(input, kernel, 0)
+
+    def augGaussianNoise(self, input):
+        mean, var = 0, 10
+        sigma = var ** 0.5
+        gaussian = np.random.normal(mean, sigma, (224, 224)) #  np.zeros((224, 224), np.float32)
+        noisy_image = np.zeros(input.shape, np.float32)
+        if len(input.shape) == 2:
+            noisy_image = img + gaussian
+        else:
+            noisy_image[:, :, 0] = img[:, :, 0] + gaussian
+            noisy_image[:, :, 1] = img[:, :, 1] + gaussian
+            noisy_image[:, :, 2] = img[:, :, 2] + gaussian
+        cv2.normalize(noisy_image, noisy_image, 0, 255, cv2.NORM_MINMAX, dtype=-1)
+
+        return noisy_image
+
     def augFlipVertical(self, input, output):
         pass
         # ton code ici
