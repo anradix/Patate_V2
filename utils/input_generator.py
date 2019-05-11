@@ -26,6 +26,7 @@ class InputGenerator(object):
         self.data = data
         self.size = len(data)
         self.input_size = input_size
+        self.debug = False
 
         self.__dict__.update(augmentation)
 
@@ -35,8 +36,9 @@ class InputGenerator(object):
         input = np.reshape(input, (input.shape[0], input.shape[1], 1))
         input = np.concatenate((input, input, input), axis=2)
 
-        cv2.imshow('image',np.uint8(input))
-        cv2.waitKey(0)
+        if self.debug:
+            cv2.imshow('image',np.uint8(input))
+            cv2.waitKey(0)
 
         return input
 

@@ -9,25 +9,28 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, LearningRateScheduler
 from keras.optimizers import Adam
 
 # Local
+from models.old_patate import getOldModel
+from models.dense_patate import getDenseModel
+
 from utils.input_generator import InputGenerator
 from utils.training import step_decay, PrintLR
-from models.old_patate import getOldModel
+from utils.argparser import get_args_training
 
 # Init vars
-experiment_name = "vivatech_"+time.strftime("%Y%m%d%H%M%S")
-directory_train = './datas/Train'
-directory_test = './datas/Val'
+experiment, nbrepoch, batchsize, validation, training = get_args_training()
+
+experiment = experiment+"_"+time.strftime("%Y%m%d%H%M%S")
 input_size = (96, 160, 3)
 
 # Input generator
-i_gen_train = InputGenerator(datapath=directory_train, input_size=input_size)
-i_gen_test = InputGenerator(datapath=directory_test, input_size=input_size)
+i_gen_train = InputGenerator(datapath=training, input_size=input_size)
+i_gen_test = InputGenerator(datapath=validation, input_size=input_size)
 
-nb_steps_train = i_gen_train.size // 32
-nb_steps_test = i_gen_test.size // 32
+nb_steps_train = i_gen_train.size // batchsize
+nb_steps_test = i_gen_test.size // batchsize
 
 # Build model
-model = getOldModel(input_size=input_size)
+model = getDenseModel(input_size=input_size)
 
 adam = Adam(lr=10e-3)
 
@@ -39,7 +42,7 @@ model.compile(
 
 # Callbacks setup
 
-directory = "graph/" + experiment_name
+directory = "graph/" + experiment
 os.mkdir(directory)
 h5_filename = "{}/model.h5".format(directory)
 
@@ -55,12 +58,12 @@ lrs = LearningRateScheduler(step_decay)
 lrp = PrintLR()
 
 h = model.fit_generator(
-    i_gen_train.generator(),
+    i_gen_train.generator(batchsize),
     steps_per_epoch=nb_steps_train,
-    epochs=10,
+    epochs=nbrepoch,
     verbose=1,
     callbacks=[best_checkpoint, tbd, lrs, lrp],
-    validation_data=i_gen_test.generator(),
+    validation_data=i_gen_test.generator(batchsize),
     validation_steps=nb_steps_test,
     max_queue_size=10, shuffle=True, initial_epoch=0,
 )

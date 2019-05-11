@@ -9,7 +9,7 @@ def step_decay(epoch):
     '''
     initial_lrate = 1e-3
     drop = 1e-1
-    epochs_drop = 5.0
+    epochs_drop = 7.0
     lrate = initial_lrate * math.pow(drop,
         math.floor((1+epoch)/epochs_drop))
     lrate = 1e-4 if lrate < 1e-4 else lrate
@@ -24,4 +24,4 @@ class PrintLR(Callback):
         decay = self.model.optimizer.decay
         iterations = self.model.optimizer.iterations
         lr_with_decay = lr / (1. + decay * K.cast(iterations, K.dtype(decay)))
-        print("\nlr={}\n\n".format(K.eval(lr_with_decay)))
+        print("\033[1m==> Learning Rate: %.2e\033[0m\n" % (K.eval(lr_with_decay)))
