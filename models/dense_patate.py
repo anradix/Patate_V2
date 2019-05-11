@@ -63,9 +63,9 @@ def getDenseModel(input_size=(96, 160, 3), activation="relu"):
     # convolution part of the model
     # Dense Block 1
     x = MaxPooling2D(pool_size=2, strides=2, padding="same")(img_in)
-    x = dense_block(x, 3, growth_rate, 4, activation)
+    x = dense_block(x, 2, growth_rate, 4, activation)
     x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
-    x = dense_block(x, 6, growth_rate, 4, activation)
+    x = dense_block(x, 4, growth_rate, 4, activation)
     x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
     x = bn_acti_conv(
         x, int(K.int_shape(x)[3] * compression), 1, 1, activation=activation
