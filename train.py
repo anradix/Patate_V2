@@ -30,7 +30,7 @@ nb_steps_train = i_gen_train.size // batchsize
 nb_steps_test = i_gen_test.size // batchsize
 
 # Build model
-model = getDenseModel(input_size=input_size)
+model = getOldModel(input_size=input_size)
 
 adam = Adam(lr=10e-3)
 
