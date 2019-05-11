@@ -24,13 +24,16 @@ input_size = (96, 160, 3)
 
 # Input generator
 i_gen_train = InputGenerator(datapath=training, input_size=input_size)
-i_gen_test = InputGenerator(datapath=validation, input_size=input_size)
+i_gen_test = InputGenerator(
+        datapath=validation, input_size=input_size,
+        augmentation={"dropout_coarse": 0., "gray_scale": 0., "flip_vertical": 0., "noise_gaussian": 0., "blur_gaussian": 0.}
+)
 
 nb_steps_train = i_gen_train.size // batchsize
 nb_steps_test = i_gen_test.size // batchsize
 
 # Build model
-model = getOldModel(input_size=input_size)
+model = getDenseModel(input_size=input_size)
 
 adam = Adam(lr=10e-3)
 
