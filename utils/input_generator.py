@@ -104,18 +104,18 @@ class InputGenerator(object):
                 speed, direction = to_categorical(speed, 2), to_categorical(direction, 5)
 
                 X.append(input)
-                y['fc_speed'].append(speed)
-                y['fc_direction'].append(direction)
+                y['speed'].append(speed)
+                y['direction'].append(direction)
                 del data_copy[0]
 
             X = np.array(X)
-            y['fc_speed'] = np.array(y['fc_speed'])
-            y['fc_direction'] = np.array(y['fc_direction'])
+            y['speed'] = np.array(y['speed'])
+            y['direction'] = np.array(y['direction'])
             yield X, y
 
 
 if __name__ == "__main__":
 
     gen = InputGenerator("./datas/Train", (96, 160, 3))
-    for _ in gen.generator():
-        pass
+    X, y = next(gen.generator(batch_size=1))
+    print(X, y)
