@@ -10,8 +10,11 @@ class InputGenerator(object):
                 datapath,
                 input_size,
                 augmentation = {
-                    "gray_scale": .0,
-                    "flip_vertical":.5,
+                    "dropout_coarse": 0.33,
+                    "gray_scale": 0.33,
+                    "flip_vertical": 0.33,
+                    "noise_gaussian": 0.33,
+                    "blur_gaussian": 0.33,
                 }
             ):
         dir_list = glob(datapath + '/*.jpg')
@@ -35,30 +38,24 @@ class InputGenerator(object):
         input = np.dot(input[...,:3], [0.299, 0.587, 0.114])
         input = np.reshape(input, (input.shape[0], input.shape[1], 1))
         input = np.concatenate((input, input, input), axis=2)
-
-        if self.debug:
-            cv2.imshow('image',np.uint8(input))
-            cv2.waitKey(0)
-
         return input
 
     def augGaussianBlur(self, input):
         kernel = (5,5)
         input = cv2.GaussianBlur(input, kernel, 0)
+        return input
 
     def augGaussianNoise(self, input):
         mean, var = 0, 10
         sigma = var ** 0.5
-        gaussian = np.random.normal(mean, sigma, (224, 224)) #  np.zeros((224, 224), np.float32)
+        gaussian = np.random.normal(mean, sigma, input.shape[:2]) #  np.zeros((224, 224), np.float32)
         noisy_image = np.zeros(input.shape, np.float32)
         if len(input.shape) == 2:
             noisy_image = img + gaussian
         else:
-            noisy_image[:, :, 0] = img[:, :, 0] + gaussian
-            noisy_image[:, :, 1] = img[:, :, 1] + gaussian
-            noisy_image[:, :, 2] = img[:, :, 2] + gaussian
-        cv2.normalize(noisy_image, noisy_image, 0, 255, cv2.NORM_MINMAX, dtype=-1)
-
+            noisy_image[:, :, 0] = input[:, :, 0] + gaussian
+            noisy_image[:, :, 1] = input[:, :, 1] + gaussian
+            noisy_image[:, :, 2] = input[:, :, 2] + gaussian
         return noisy_image
 
     def augFlipVertical(self, input, output):
@@ -66,11 +63,26 @@ class InputGenerator(object):
         # ton code ici
         return input, output
 
+    def augCoarseDropout(self, input):
+        scale, shape = random.randint(5, 30), input.shape[:2]
+        shape = (np.int32(shape[0] / scale), np.int32(shape[1] / scale))
+        mask = np.random.randint(2, size=shape).reshape([shape[0], shape[1], 1]) | np.random.randint(2, size=shape).reshape([shape[0], shape[1], 1])
+        mask = np.concatenate((mask, mask, mask), axis=2)
+        input = input * cv2.resize(np.uint8(mask), (input.shape[1], input.shape[0]), interpolation=cv2.INTER_NEAREST)
+        return input
+
     def augmentation(self, input, output):
-        if random.random() > self.gray_scale:
+        if random.random() < self.blur_gaussian:
+            input = self.augGaussianBlur(input)
+        if random.random() < self.gray_scale:
             input = self.augGrayScale(input)
-        if random.random() > self.flip_vertical:
+        if random.random() < self.flip_vertical:
             input, output = self.augFlipVertical(input, output)
+        if random.random() < self.noise_gaussian:
+            input = self.augGaussianNoise(input)
+        if random.random() < self.dropout_coarse:
+            input = self.augCoarseDropout(input)
+
         return input, output
 
     def generator(self, batch_size=32):
@@ -116,6 +128,16 @@ class InputGenerator(object):
 
 if __name__ == "__main__":
 
+    aug = {
+        "gray_scale": 0.,
+        "gray_scale": 0.,
+        "flip_vertical": 0.,
+        "noise_gaussian": 0.,
+        "blur_gaussian": 0.,
+    }
     gen = InputGenerator("./datas/Train", (96, 160, 3))
-    X, y = next(gen.generator(batch_size=1))
-    print(X, y)
+    for X, y in gen.generator(batch_size=1):
+        input = X[0] * 255
+        input = cv2.resize(input, (1280, 768), interpolation=cv2.INTER_NEAREST)
+        cv2.imshow('image',np.uint8(input))
+        cv2.waitKey(0)
