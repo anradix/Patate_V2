@@ -72,12 +72,12 @@ class Controler(object):
             self.controls()
 
     def controls(self):
-        self.speed  = self.joy.rightTrigger() #Right trigger position (values 0 to 1.0)
+        self.speed  = self.joy.rightTrigger() # Get floats values between 0 to 1.0
         self.speed = 322 - (self.speed * 17)
         self.speed = round(self.speed, 0)
         self.speed = int(self.speed)
 
-        self.direction = self.joy.leftX()      #X-axis of the left stick (values -1.0 to 1.0)
+        self.direction = self.joy.leftX() # Get floats values between -1.0 to 1.0
         self.direction = (self.direction * 80) + 320
         self.direction = round(self.direction, 0)
         self.direction = int(self.direction)
