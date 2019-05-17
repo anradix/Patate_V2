@@ -12,7 +12,7 @@ class InputGenerator(object):
                 augmentation = {
                     "dropout_coarse": 0.33,
                     "gray_scale": 0.33,
-                    "flip_vertical": 0.33,
+                    "flip_vertical": 0.5,
                     "noise_gaussian": 0.33,
                     "blur_gaussian": 0.33,
                 }
@@ -59,8 +59,12 @@ class InputGenerator(object):
         return noisy_image
 
     def augFlipVertical(self, input, output):
-        pass
-        # ton code ici
+        input = np.fliplr(input)
+        s, d = output
+        d = int(d)
+        d -= 4
+        d *= -1
+        output = (s, d)
         return input, output
 
     def augCoarseDropout(self, input):
@@ -129,15 +133,19 @@ class InputGenerator(object):
 if __name__ == "__main__":
 
     aug = {
-        "gray_scale": 0.,
+        "dropout_coarse": 0.,
         "gray_scale": 0.,
         "flip_vertical": 0.,
         "noise_gaussian": 0.,
         "blur_gaussian": 0.,
     }
-    gen = InputGenerator("./datas/Train", (96, 160, 3))
+    gen = InputGenerator("./datas/Train", (96, 160, 3), augmentation=aug)
     for X, y in gen.generator(batch_size=1):
         input = X[0] * 255
         input = cv2.resize(input, (1280, 768), interpolation=cv2.INTER_NEAREST)
+        cv2.imshow('image',np.uint8(input))
+        cv2.waitKey(0)
+
+        input, _ = gen.augFlipVertical(input, (0, 0))
         cv2.imshow('image',np.uint8(input))
         cv2.waitKey(0)

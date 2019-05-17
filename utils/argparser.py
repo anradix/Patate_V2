@@ -27,4 +27,4 @@ def get_args_training():
     #     help="weights.",
     # )
     args = parser.parse_args()
-    return args.name_experiment, args.nbrepoch, args.batchsize, args.validation, args.training
+    return args.name_experiment, args.nbrepoch, args.batchsize, args.validation.rstrip('/'), args.training.rstrip('/')
