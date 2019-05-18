@@ -48,9 +48,14 @@ model.compile(
 directory = "graph/" + experiment
 os.mkdir(directory)
 h5_filename = "{}/model.h5".format(directory)
+best_filename = "{}/best_model.h5".format(directory)
 
 best_checkpoint = ModelCheckpoint(
     h5_filename, monitor='val_loss',
+    verbose=1, save_best_only=True, mode='min'
+)
+checkpoint = ModelCheckpoint(
+    best_filename, monitor='loss',
     verbose=1, save_best_only=True, mode='min'
 )
 tbd = TensorBoard(
@@ -65,7 +70,7 @@ h = model.fit_generator(
     steps_per_epoch=nb_steps_train,
     epochs=nbrepoch,
     verbose=1,
-    callbacks=[best_checkpoint, tbd, lrs, lrp],
+    callbacks=[checkpoint, best_checkpoint, tbd, lrs, lrp],
     validation_data=i_gen_test.generator(batchsize),
     validation_steps=nb_steps_test,
     max_queue_size=10, shuffle=True, initial_epoch=0,
