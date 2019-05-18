@@ -24,7 +24,7 @@ pwm.set_pwm_freq(50)
 camera = PiCamera()
 camera.resolution = IM_SIZE
 camera.framerate = 60
-rawCapture = PiRGBArray(self.camera, size = IM_SIZE)
+rawCapture = PiRGBArray(camera, size = IM_SIZE)
 time.sleep(2.0)
 
 # created a *threaded *video stream, allow the camera sensor to warmup
