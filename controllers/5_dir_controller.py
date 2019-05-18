@@ -98,5 +98,4 @@ except:
 pwm.set_pwm(0, 0, 0)
 pwm.set_pwm(1, 0, 0)
 pwm.set_pwm(2, 0, 0)
-vs.stop()
 print("Stop")
