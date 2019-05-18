@@ -35,6 +35,8 @@ time.sleep(2.0)
 # img = Image.fromarray(frame)
 # img.save("test.png")
 
+memory = deque(maxlen=6)
+
 # Starting loop
 print("Ready ! press CTRL+C to START/STOP :")
 try:
@@ -49,13 +51,14 @@ try:
     # loop over some frames...this time using the threaded stream
     while True:
             # grab the frame from the threaded video stream
-            frame = camera.capture_continuous(rawCapture, format="rgb", use_video_port=True):
+            frame = camera.capture_continuous(rawCapture, format="rgb", use_video_port=True)
             image = frame.array
             # frame = vs.read()
             image = np.array([frame]) / 255.0
             ##  # Model prediction
             preds_raw = model.predict(image)
             preds = [np.argmax(pred, axis=1) for pred in preds_raw]
+            memory.append(preds)
             ##  # Action
             if preds[1] == 0:
                 if speed == SPEED_NORMAL:
