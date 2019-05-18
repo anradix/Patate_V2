@@ -1,10 +1,15 @@
-from pivideostream import PiVideoStream
-from keras.models import load_model
-import Adafruit_PCA9685
 from const import *
 import numpy as np
 import sys
 import time
+
+import Adafruit_PCA9685
+from keras.models import load_model
+from collections import deque
+
+from pivideostream import PiVideoStream
+
+memory = deque(maxlen=6)
 
 #Load model
 model = load_model(sys.argv[1])
@@ -39,11 +44,13 @@ try:
     head = H_UP
     # loop over some frames...this time using the threaded stream
     while True:
-            # grab the frame from the threaded video stream 
+            # grab the frame from the threaded video stream
             frame = vs.read()
             image = np.array([frame]) / 255.0
             ##  # Model prediction
             preds_raw = model.predict(image)
+            memory.append(preds_raw[1])
+            preds_raw[1] = np.asarray(memory).sum(axis=0)
             preds = [np.argmax(pred, axis=1) for pred in preds_raw]
             ##  # Action
             if preds[1] == 0:
@@ -70,12 +77,12 @@ try:
                     head = H_DOWN
                 speed = SPEED_NORMAL
                 direction = DIR_R_M
-            ##  # Apply values to engines   
+            ##  # Apply values to engines
             pwm.set_pwm(0, 0, direction)
             pwm.set_pwm(1, 0, speed)
             ## # Move Head
             pwm.set_pwm(2, 0, head)
-            
+
 except:
     pass
 
