@@ -3,6 +3,7 @@ import sys
 import time
 
 from picamera import PiCamera
+from picamera.array import PiRGBArray
 import Adafruit_PCA9685
 
 from keras.models import load_model
