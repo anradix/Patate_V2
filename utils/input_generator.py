@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import random
+import time
 from glob import glob
 
 from keras.utils import to_categorical
@@ -24,8 +25,11 @@ class InputGenerator(object):
         for path in dir_list:
             filename = path.split('/')[-1]
             speed, dir, _  = filename.split('_')
-            data.append([path, (speed, dir)])
-
+            data.append([path, (speed.split('.')[-1], dir.split('.')[0])])
+            if int(data[-1][1][0]) > 1 or int(data[-1][1][1]) > 5 or int(data[-1][1][1]) == -1:
+                del data[-1]
+            # print(data[-1][1][0], data[-1][1][1])
+            # time.sleep(0.05)
         self.data = data
         self.size = len(data)
         self.input_size = input_size
@@ -100,10 +104,15 @@ class InputGenerator(object):
                 random.shuffle(data_copy)
             X = []
             y = {"speed": [], "direction": []}
-            for _ in range(batch_size):
+            b = 0
+            while True:
                 input_path, output = data_copy[0]
                 # Input formating
                 input = cv2.imread(input_path)
+
+                if input is None:
+                    del data_copy[0]
+                    continue
 
                 """ Data augmentation there
                 """
@@ -123,6 +132,10 @@ class InputGenerator(object):
                 y['speed'].append(speed)
                 y['direction'].append(direction)
                 del data_copy[0]
+
+                b += 1
+                if b >= batch_size:
+                    break
 
             X = np.array(X)
             y['speed'] = np.array(y['speed'])

@@ -22,9 +22,13 @@ def get_args_training():
         "-t", "--training", type=str, default="datas/Train",
         help="Directory containing data to train.",
     )
+    parser.add_argument(
+        "-m", "--model", type=str, default=None,
+        help="Directory containing data to train.",
+    )
     # parser.add_argument(
     #     "-w", "--weights", type=str, default=None,
     #     help="weights.",
     # )
     args = parser.parse_args()
-    return args.name_experiment, args.nbrepoch, args.batchsize, args.validation.rstrip('/'), args.training.rstrip('/')
+    return args.name_experiment, args.nbrepoch, args.batchsize, args.validation.rstrip('/'), args.training.rstrip('/'), args.model
