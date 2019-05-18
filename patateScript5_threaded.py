@@ -9,7 +9,7 @@ from collections import deque
 
 from pivideostream import PiVideoStream
 
-memory = deque(maxlen=6)
+memory = deque(maxlen=4)
 
 #Load model
 model = load_model(sys.argv[1])
